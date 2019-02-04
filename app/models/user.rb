@@ -12,6 +12,9 @@ class User < ApplicationRecord
     has_many :reverses_of_relationship, class_name: 'Relationship', foreign_key: 'follow_id'
     has_many :followers, through: :reverses_of_relationship, source: :user
     
+    has_many :okiniiris
+    has_many :tweet, dependent: :destroy, through: :okiniiris, source: :micropost
+    
     def follow(other_user)
         unless self == other_user
           self.relationships.find_or_create_by(follow_id: other_user.id)
@@ -27,6 +30,19 @@ class User < ApplicationRecord
         self.followings.include?(other_user)
     end
     
+    def like(micropost)
+        self.okiniiris.find_or_create_by(micropost_id: micropost.id)
+    end
+    
+    def dislike(micropost)
+        okiniiri = self.okiniiris.find_or_create_by(micropost_id: micropost.id)
+        okiniiri.destroy if okiniiri
+    end
+    
+    def okiniiri?(micropost)
+        self.tweet.include?(micropost)
+    end
+        
     def feed_microposts
         Micropost.where(user_id: self.following_ids + [self.id])
     end

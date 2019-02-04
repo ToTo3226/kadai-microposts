@@ -1,0 +1,11 @@
+  <% if current_user.okiniiri?(micropost) %>
+    <%= form_for(current_user.okiniiris.find_by(micropost_id: micropost.id), html: { method: :delete }) do |f| %>
+    <%= hidden_field_tag :follow_id, micropost.id %>
+      <%= f.submit 'Dislike', class: 'btn btn-danger btn-xs' %>
+    <% end %>
+  <% else %>
+    <%= form_for(current_user.okiniiris.build) do |f| %>
+    <%= hidden_field_tag :follow_id, micropost.id %>
+      <%= f.submit 'Like', class: 'btn btn-primary btn-xs' %>
+    <% end %>
+  <% end %>
